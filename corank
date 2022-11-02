@@ -1,0 +1,47 @@
+K.<v>=QuadraticField(-1)
+	R.<x,y>=PolynomialRing(K)
+		
+ 	#comb computes the binomial number c(i,j)
+	def comb(i,j):
+	if(j==0):
+	result = 1
+	else:
+	result =comb(i,j-1)*(i-j+1)/j
+	return result
+	
+	# term is related to the action of the matrix;
+	def term(x,i,j,n):
+	return comb(x-j-2,i-n)*comb(j,n)*(-1)^(i-n)
+	
+	# sumterm is related to the sum of actions of the four mattrices.
+	
+	def sumterm(i,j,n):
+	if (n==0):
+	result = term(x,i,j,0)
+	else:
+	result = sumterm(i,j,n-1)+term(x,i,j,n)
+	return result
+	
+	# c(i,j,x) computes the (i,j)-coefficients of the U_5 matrix 
+	#when the weight is equal to k+2 (up to a constant that depends only on j),
+	#except the diagonal (4i,4i)-term with has an extra term given by y=(-4)^{(x-1)/4}.
+	
+	def c(i,j,x):
+	if (i >j):
+	result = sumterm(i,j,j)
+	if (i<j):
+	result = sumterm(i,j,i)
+	if(i==j):
+	result = sumterm(i,j,i)+y
+	return result
+	
+	# Example for 3x3 minor
+	s=3
+	A = Matrix(R,s,s)
+	for i in range(s):
+	for j in range(s):        
+	A[i,j]=c(4*i,4*j,x)
+	
+	# Example of the co-rank for different weight.
+	for i in range(0,30):
+	print ‘i = ‘,i, ‘coRank = ‘ ,s-A.subs(x=4*i+2,y=(-4)^(i-1)).rank()
